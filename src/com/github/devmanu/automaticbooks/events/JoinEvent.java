@@ -10,9 +10,8 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 
 public class JoinEvent implements Listener {
 
@@ -75,7 +74,7 @@ public class JoinEvent implements Listener {
                     }
 
 
-                    BufferedWriter writer = new BufferedWriter(new FileWriter(automaticBooks.getJoinBook()));
+                    Writer writer = new OutputStreamWriter(new FileOutputStream(automaticBooks.getJoinBook()), StandardCharsets.UTF_8);
                     writer.write(obj.toString());
                     writer.flush();
                     writer.close();

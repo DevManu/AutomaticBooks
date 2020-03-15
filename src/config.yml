@@ -2,22 +2,22 @@ usePermission: false
 usePlaceholderAPI: true
 times: -1  #0 = the message is not shown, #-1 = the message is always shown;
 delay: 2
-defaultCraftedBookName: "&3An awesome book!"
+defaultCraftedBookName: "&6Awesome book!"
 searchForUpdates: true
 messages:
   guide:
     - '                     &6&lAutomaticBooks §eby _Ma_nu_'
-    - " &8- &e/book open &8» &aOpen the saved book"
-    - " &8- &e/book preview &8» &aLaunch a preview of the book in your hand"
-    - " &8- &e/book save &8» &aSave the book in your hand"
-    - " &8- &e/book announce &8» &aSend a global announce with the book in your hand"
-    - " &8- &e/book times <number> &8» &aSet how many times an announce will be shown at join"
-    - " &8- &e/book delete &8» &aDelete the saved book"
-    - " &8- &e/book reload &8» &aReload the plugin"
-    - " &8- &e/book give &8» &aAdd a Book and Quill to your inventory"
-    - " &8- &e/book craft &8» &aCraft a book using the Book and Quill in your hand"
+    - " &8- &3/book open &8» &bOpen the saved book"
+    - " &8- &3/book preview &8» &bLaunch a preview of the book in your hand"
+    - " &8- &3/book save &8» &bSave the book in your hand"
+    - " &8- &3/book announce &8» &bSend a global announce with the book in your hand"
+    - " &8- &3/book times <number> &8» &bSet how many times an announce will be shown at join"
+    - " &8- &3/book delete &8» &bDelete the saved book"
+    - " &8- &3/book reload &8» &bReload the plugin"
+    - " &8- &3/book give &8» &bAdd a Book and Quill to your inventory"
+    - " &8- &3/book craft &8» &bCraft a book using the Book and Quill in your hand"
 
-  open: '&eThe book has been opened.'
+  open: '&aThe book has been opened.'
   test: '&aYou have opened a book as test.'
   noPermission: '&cYou can''t use this command.'
   notBook: "&cYou don't have a Book and Quill in your hand."

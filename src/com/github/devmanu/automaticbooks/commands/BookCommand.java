@@ -20,10 +20,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.List;
 
 
@@ -122,6 +119,7 @@ public class BookCommand implements CommandExecutor {
                             JSONArray array = new JSONArray();
                             array.addAll(pages);
                             obj.put("pages", array);
+                            obj.remove("players");
 
                             writer.write(obj.toString());
                             writer.flush();
@@ -165,6 +163,23 @@ public class BookCommand implements CommandExecutor {
                 automaticBooks.sendMessage(player, "timesChanged");
             }
 
+        } else if (arg.equalsIgnoreCase("delete")) {
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    try {
+                        BufferedWriter writer = new BufferedWriter(new PrintWriter(automaticBooks.getJoinBook()));
+                        JSONObject obj = automaticBooks.getJoinData();
+                        obj.remove("pages");
+                        obj.remove("players");
+                        writer.write(obj.toJSONString());
+                        writer.flush();
+                        automaticBooks.sendMessage(player, "deletedBook");
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }.runTaskAsynchronously(automaticBooks);
         } else {
             sendGuide(player);
         }

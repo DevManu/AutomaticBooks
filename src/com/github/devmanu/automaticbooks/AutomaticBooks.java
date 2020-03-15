@@ -199,7 +199,7 @@ public class AutomaticBooks extends JavaPlugin {
 
 
                 try {
-                    Reader reader = new InputStreamReader(new FileInputStream(joinBook), StandardCharsets.UTF_8);
+                    ReaderUTF8 reader = new ReaderUTF8(new FileInputStream(joinBook));
                     JSONParser parser = new JSONParser();
                     joinData = (JSONObject) parser.parse(reader);
                 } catch (IOException | ParseException e) {
