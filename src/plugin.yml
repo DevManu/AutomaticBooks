@@ -1,0 +1,6 @@
+name: "AutomaticBooks"
+version: "2"
+main: com.github.devmanu.automaticbooks.AutomaticBooks
+commands:
+  book:
+    description: Manage books

@@ -1,0 +1,38 @@
+usePermission: false
+usePlaceholderAPI: true
+times: -1  #0 = the message is not shown, #-1 = the message is always shown;
+delay: 2
+defaultCraftedBookName: "&3An awesome book!"
+searchForUpdates: true
+messages:
+  guide:
+    - '                     &6&lAutomaticBooks §eby _Ma_nu_'
+    - " &8- &e/book open &8» &aOpen the saved book"
+    - " &8- &e/book preview &8» &aLaunch a preview of the book in your hand"
+    - " &8- &e/book save &8» &aSave the book in your hand"
+    - " &8- &e/book announce &8» &aSend a global announce with the book in your hand"
+    - " &8- &e/book times <number> &8» &aSet how many times an announce will be shown at join"
+    - " &8- &e/book delete &8» &aDelete the saved book"
+    - " &8- &e/book reload &8» &aReload the plugin"
+    - " &8- &e/book give &8» &aAdd a Book and Quill to your inventory"
+    - " &8- &e/book craft &8» &aCraft a book using the Book and Quill in your hand"
+
+  open: '&eThe book has been opened.'
+  test: '&aYou have opened a book as test.'
+  noPermission: '&cYou can''t use this command.'
+  notBook: "&cYou don't have a Book and Quill in your hand."
+  changedBook: '&aYou have changed the book.'
+  announceSent: '&aYou have sent a global announce.'
+  announceReceived: '&aYou have received a announce.'
+  currentBook: '&aYou have opened the saved book.'
+  notSavedBook: '&cThere is not a saved book.'
+  timesChanged: '&aYou have changed the value of ''times''.'
+  timesUsage: '&2Usage: &a/book times <number>.'
+  notNumeric: '&cYou need to specific a number'
+  reload: "&3AutomaticBooks &ahas been reloaded."
+  deletedBook: "&cThe book has been deleted."
+  givedBook: "&aYou have received a Book and Quill."
+  craftedBook: "§aYou have crafted a book."
+  fullInventory: "&cYour inventory is full."
+  craftUsage: "&2Usage: &a/book craft <title>"
+  preview: "&aYou have opened a preview"
