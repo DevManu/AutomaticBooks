@@ -20,7 +20,6 @@ This plugin has an API that you can use in your plugin.
 AutomaticBooks automaticBooks = AutomaticBooksAPI.getAPI(); 
 
 //Create a list which contains all pages of your book.
-
 List<String> pages = new ArrayList<String>();
 pages.add("&9This is the first line of the first page of the book \n" +
 + "&8This is the second line of the first page of the book");
@@ -29,7 +28,6 @@ pages.add("&cThis is the first line of the second page of the book \n" +
 
 
 //Get the player
-
 Player player = Bukkit.getPlayer("_Ma_nu_");
 
 
