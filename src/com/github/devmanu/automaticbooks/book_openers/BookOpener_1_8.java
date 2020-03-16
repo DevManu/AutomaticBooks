@@ -1,12 +1,12 @@
 package com.github.devmanu.automaticbooks.book_openers;
 
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.events.PacketContainer;
+import com.comphenix.protocol.utility.MinecraftReflection;
 import com.github.devmanu.automaticbooks.AutomaticBooks;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import net.minecraft.server.v1_8_R3.PacketDataSerializer;
-import net.minecraft.server.v1_8_R3.PacketPlayOutCustomPayload;
-import net.minecraft.server.v1_8_R3.PlayerConnection;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -28,14 +28,19 @@ public class BookOpener_1_8 implements BookOpener {
         int slot = player.getInventory().getHeldItemSlot();
         final ItemStack old = player.getInventory().getItem(slot);
         player.getInventory().setItem(slot, automaticBooks.getBook(player, pages, automaticBooks.isUsingPlaceholderAPI()));
-        ByteBuf bf = Unpooled.buffer(256);
-        bf.setByte(0, 0);
-        bf.writerIndex(1);
-
-
-        PlayerConnection connection = ((CraftPlayer) player).getHandle().playerConnection;
-        PacketPlayOutCustomPayload packet = new PacketPlayOutCustomPayload("MC|BOpen", new PacketDataSerializer(bf));
-        connection.sendPacket(packet);
+        try {
+            PacketContainer pc = ProtocolLibrary.getProtocolManager()
+                    .createPacket(PacketType.Play.Server.CUSTOM_PAYLOAD);
+            pc.getModifier().writeDefaults();
+            ByteBuf bf = Unpooled.buffer(256);
+            bf.setByte(0, 0);
+            bf.writerIndex(1);
+            pc.getModifier().write(1, MinecraftReflection.getPacketDataSerializer(bf));
+            pc.getStrings().write(0, "MC|BOpen");
+            ProtocolLibrary.getProtocolManager().sendServerPacket(player, pc);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         player.getInventory().setItem(slot, old);
 
     }

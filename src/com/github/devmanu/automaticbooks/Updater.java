@@ -23,7 +23,7 @@ public class Updater {
 
     private AutomaticBooks automaticBooks;
     private String foundVersion;
-    private List<Player> warning = new ArrayList<>();
+    private List<String> warning = new ArrayList<>();
     private String updateText;
     private String updateLink;
     private String hoverText;
@@ -95,7 +95,7 @@ public class Updater {
 
 
     public void sendWarning(Player player) {
-        if (warning.contains(player) || foundVersion == null || updateLink == null || updateText == null || !player.hasPermission("AutomaticBooks.admin"))
+        if (warning.contains(player.getName()) || foundVersion == null || updateLink == null || updateText == null || !player.hasPermission("AutomaticBooks.admin"))
             return;
 
         BaseComponent[] text = TextComponent.fromLegacyText(updateText);
@@ -104,7 +104,7 @@ public class Updater {
         t.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, updateLink));
         player.sendMessage("");
         player.spigot().sendMessage(t);
-        warning.add(player);
+        warning.add(player.getName());
     }
 
 

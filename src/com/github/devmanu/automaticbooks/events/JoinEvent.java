@@ -66,7 +66,7 @@ public class JoinEvent implements Listener {
                     } else {
 
                         long views = ((long) pl.get("views"));
-                        if (times < 0 || views >= times) {
+                        if (times >= 0 && views >= times) {
                             return;
                         }
 

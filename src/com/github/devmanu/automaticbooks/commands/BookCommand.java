@@ -136,14 +136,18 @@ public class BookCommand implements CommandExecutor {
 
 
         } else if (arg.equalsIgnoreCase("announce")) {
-            boolean perm = config.getBoolean("usePermissions");
-            for (Player p : Bukkit.getOnlinePlayers()) {
-                if (perm && !p.hasPermission("AutomaticBooks.announce.read"))
-                    continue;
-                automaticBooks.getBookOpener().openBook(p, pages);
-            }
-            automaticBooks.sendMessage(player, "announceSent");
 
+            if (pages != null) {
+                boolean perm = config.getBoolean("usePermissions");
+                for (Player p : Bukkit.getOnlinePlayers()) {
+                    if (perm && !p.hasPermission("AutomaticBooks.announce.read"))
+                        continue;
+                    automaticBooks.getBookOpener().openBook(p, pages);
+                }
+                automaticBooks.sendMessage(player, "announceSent");
+            } else {
+                automaticBooks.sendMessage(player, "notBook");
+            }
 
         } else if (arg.equalsIgnoreCase("give")) {
             player.getInventory().addItem(automaticBooks.getEmptyBook());

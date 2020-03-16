@@ -2,11 +2,14 @@ usePermission: false
 usePlaceholderAPI: true
 times: -1  #0 = the message is not shown, #-1 = the message is always shown;
 delay: 2
+soft-depend: [ProtocolLib]
 defaultCraftedBookName: "&6Awesome book!"
 searchForUpdates: true
 messages:
   guide:
-    - '                     &6&lAutomaticBooks §eby _Ma_nu_'
+    - ''
+    - ''
+    - '                     &3&lAutomaticBooks §bby _Ma_nu_'
     - " &8- &3/book open &8» &bOpen the saved book"
     - " &8- &3/book preview &8» &bLaunch a preview of the book in your hand"
     - " &8- &3/book save &8» &bSave the book in your hand"

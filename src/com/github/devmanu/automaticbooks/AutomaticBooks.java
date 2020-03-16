@@ -5,7 +5,6 @@ import com.github.devmanu.automaticbooks.book_openers.BookOpener_1_13;
 import com.github.devmanu.automaticbooks.book_openers.BookOpener_1_8;
 import com.github.devmanu.automaticbooks.commands.BookCommand;
 import com.github.devmanu.automaticbooks.events.JoinEvent;
-import com.google.common.base.Charsets;
 import jdk.internal.util.xml.impl.ReaderUTF8;
 import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Bukkit;
@@ -39,7 +38,7 @@ public class AutomaticBooks extends JavaPlugin {
     private YamlConfiguration config;
     private File configFile = new File(getDataFolder() + File.separator + "config.yml");
     private ArrayList<String> pages = new ArrayList<>();
-    private final String version = "2.0";
+    private static final String VERSION = "2.0";
     private Updater updater;
 
     public boolean isLegacy() {
@@ -79,6 +78,14 @@ public class AutomaticBooks extends JavaPlugin {
         if (config.getBoolean("searchForUpdates"))
             updater.searchForUpdates();
 
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                if (!Bukkit.getPluginManager().isPluginEnabled("ProtocolLib")) {
+                    consoleMessage("§cAutomaticBooks need ProtocolLib. Please install it.");
+                }
+            }
+        }.runTaskLaterAsynchronously(this, 20 * 10);
 
     }
 
@@ -100,7 +107,7 @@ public class AutomaticBooks extends JavaPlugin {
     public ItemStack getEmptyBook() {
 
         if (!isLegacy())
-            return new ItemStack(Material.matchMaterial("WRITABLE_BOOK"));
+            return new ItemStack(Material.WRITABLE_BOOK);
         else
             return new ItemStack(Material.matchMaterial("BOOK_AND_QUILL"), 1, (byte) 0);
     }
@@ -262,15 +269,13 @@ public class AutomaticBooks extends JavaPlugin {
     }
 
     public String getVersion() {
-        return version;
+        return VERSION;
     }
 
 
     public Updater getUpdater() {
         return updater;
     }
-
-
 
 
     public void saveConfig() {
