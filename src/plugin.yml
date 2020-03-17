@@ -1,5 +1,5 @@
 name: "AutomaticBooks"
-version: "2"
+version: "2.0.2"
 api-version: "1.13"
 main: com.github.devmanu.automaticbooks.AutomaticBooks
 commands:

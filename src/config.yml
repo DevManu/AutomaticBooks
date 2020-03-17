@@ -9,7 +9,7 @@ messages:
   guide:
     - ''
     - ''
-    - '                     &3&lAutomaticBooks §bby _Ma_nu_'
+    - '                     &3&lAutomaticBooks &bby _Ma_nu_'
     - " &8- &3/book open &8» &bOpen the saved book"
     - " &8- &3/book preview &8» &bLaunch a preview of the book in your hand"
     - " &8- &3/book save &8» &bSave the book in your hand"
@@ -18,7 +18,7 @@ messages:
     - " &8- &3/book delete &8» &bDelete the saved book"
     - " &8- &3/book reload &8» &bReload the plugin"
     - " &8- &3/book give &8» &bAdd a Book and Quill to your inventory"
-    - " &8- &3/book craft &8» &bCraft a book using the Book and Quill in your hand"
+    - " &8- &3/book craft [name] &8» &bCraft a book using the Book and Quill in your hand"
 
   open: '&aThe book has been opened.'
   test: '&aYou have opened a book as test.'
@@ -37,5 +37,5 @@ messages:
   givedBook: "&aYou have received a Book and Quill."
   craftedBook: "§aYou have crafted a book."
   fullInventory: "&cYour inventory is full."
-  craftUsage: "&2Usage: &a/book craft <title>"
+  craftUsage: "&2Usage: &a/book craft [name]"
   preview: "&aYou have opened a preview"

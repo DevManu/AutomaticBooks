@@ -67,7 +67,7 @@ public class AutomaticBooks extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new JoinEvent(this), this);
         getCommand("book").setExecutor(new BookCommand(this));
 
-        Metrics metrics = new Metrics(this);
+        Metrics metrics = new Metrics(this, 5715);
 
 
         updater = new Updater(this);
