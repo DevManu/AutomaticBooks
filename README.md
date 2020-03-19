@@ -10,7 +10,7 @@ This plugin has an API that you can use in your plugin.
 ## How to use the API
 
 * Add AutomaticBooks.jar to your project.
-* Set "**soft-depend: [AutomaticBooks]**" in plugin.yml;
+* Set "**softdepend: [AutomaticBooks]**" in plugin.yml;
 
 ### Open a book
 
