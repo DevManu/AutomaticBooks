@@ -7,12 +7,13 @@ import com.comphenix.protocol.utility.MinecraftReflection;
 import com.github.devmanu.automaticbooks.AutomaticBooks;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
 
-public class BookOpener_1_8 implements BookOpener {
+public class BookOpener_1_8 extends BookOpener {
 
 
     private AutomaticBooks automaticBooks;
@@ -43,5 +44,10 @@ public class BookOpener_1_8 implements BookOpener {
         }
         player.getInventory().setItem(slot, old);
 
+    }
+
+    @Override
+    public ItemStack getEmptyBook() {
+        return new ItemStack(Material.matchMaterial("BOOK_AND_QUILL"), 1, (byte) 0);
     }
 }

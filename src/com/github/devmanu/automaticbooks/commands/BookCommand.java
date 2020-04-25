@@ -16,11 +16,13 @@ import org.bukkit.configuration.Configuration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -39,7 +41,13 @@ public class BookCommand implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 
 
+        if (!(sender instanceof Player)) {
+            sender.sendMessage("You must be a player.");
+            return true;
+        }
+
         Player player = (Player) sender;
+
 
         if (!sender.hasPermission("automaticbooks.admin")) {
             TextComponent t1 = new TextComponent("§8[§6AutomaticBooks§8] §eThis server uses §6AutomaticBooks " + automaticBooks.getVersion() + "§e!");
@@ -52,6 +60,7 @@ public class BookCommand implements CommandExecutor {
             player.spigot().sendMessage(download, click, author);
             return true;
         }
+
 
 
         Configuration config = automaticBooks.getConfig();
@@ -184,6 +193,14 @@ public class BookCommand implements CommandExecutor {
                     }
                 }
             }.runTaskAsynchronously(automaticBooks);
+        } else if (arg.equalsIgnoreCase("edit")) {
+            List<String> p = automaticBooks.getJoinBookPages();
+            ItemStack book = automaticBooks.getBookOpener().getEmptyBook();
+            BookMeta meta = (BookMeta) book.getItemMeta();
+            meta.setPages(p);
+            book.setItemMeta(meta);
+            player.getInventory().addItem(book);
+            automaticBooks.sendMessage(player, "editBook");
         } else {
             sendGuide(player);
         }

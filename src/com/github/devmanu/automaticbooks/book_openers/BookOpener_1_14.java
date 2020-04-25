@@ -4,22 +4,24 @@ import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.utility.MinecraftReflection;
+import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.comphenix.protocol.wrappers.MinecraftKey;
 import com.github.devmanu.automaticbooks.AutomaticBooks;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import net.minecraft.server.v1_15_R1.EnumHand;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
 
-public class BookOpener_1_13 extends BookOpener {
+public class BookOpener_1_14 extends BookOpener {
 
 
     private AutomaticBooks automaticBooks;
 
-    public BookOpener_1_13(AutomaticBooks automaticBooks) {
+    public BookOpener_1_14(AutomaticBooks automaticBooks) {
         this.automaticBooks = automaticBooks;
     }
 
@@ -30,14 +32,10 @@ public class BookOpener_1_13 extends BookOpener {
         player.getInventory().setItem(slot, automaticBooks.getBook(player, pages, automaticBooks.isUsingPlaceholderAPI()));
         try {
             PacketContainer pc = ProtocolLibrary.getProtocolManager()
-                    .createPacket(PacketType.Play.Server.CUSTOM_PAYLOAD);
-            pc.getModifier().writeDefaults();
-            ByteBuf bf = Unpooled.buffer(256);
-            bf.setByte(0, 0);
-            bf.writerIndex(1);
-            pc.getModifier().write(1, MinecraftReflection.getPacketDataSerializer(bf));
+                    .createPacket(PacketType.Play.Server.OPEN_BOOK);
 
-            pc.getModifier().write(0, com.comphenix.protocol.wrappers.MinecraftKey.getConverter().getGeneric(new MinecraftKey("book_open")));
+
+            pc.getModifier().write(0, EnumWrappers.getHandConverter().getGeneric(EnumWrappers.Hand.MAIN_HAND));
 
             ProtocolLibrary.getProtocolManager().sendServerPacket(player, pc);
         } catch (Exception e) {

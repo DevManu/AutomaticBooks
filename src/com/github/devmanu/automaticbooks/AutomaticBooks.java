@@ -2,6 +2,7 @@ package com.github.devmanu.automaticbooks;
 
 import com.github.devmanu.automaticbooks.book_openers.BookOpener;
 import com.github.devmanu.automaticbooks.book_openers.BookOpener_1_13;
+import com.github.devmanu.automaticbooks.book_openers.BookOpener_1_14;
 import com.github.devmanu.automaticbooks.book_openers.BookOpener_1_8;
 import com.github.devmanu.automaticbooks.commands.BookCommand;
 import com.github.devmanu.automaticbooks.events.JoinEvent;
@@ -38,31 +39,24 @@ public class AutomaticBooks extends JavaPlugin {
     private YamlConfiguration config;
     private File configFile = new File(getDataFolder() + File.separator + "config.yml");
     private ArrayList<String> pages = new ArrayList<>();
-    private static final String VERSION = "2.0";
+    private static final String VERSION = "2.1";
     private Updater updater;
 
-    public boolean isLegacy() {
-        return legacy;
-    }
 
     @Override
     public void onEnable() {
 
         consoleMessage("§aPlugin enabled.");
-        String version = Bukkit.getVersion();
-        String[] specialVersions = {"1.13", "1.14", "1.15"};
+        String[] version = Bukkit.getVersion().replace(")", "").split("\\.");
+        int v1 = Integer.valueOf(version[1]);
 
-        AutomaticBooksAPI.instance = this;
 
-        for (String specialVersion : specialVersions)
-            if (version.contains(specialVersion))
-                legacy = false;
-
-        if (!legacy)
+        if (v1 >= 8 && v1 <= 12)
+            bookOpener = new BookOpener_1_8(this);
+        else if (v1 == 13)
             bookOpener = new BookOpener_1_13(this);
         else
-            bookOpener = new BookOpener_1_8(this);
-
+            bookOpener = new BookOpener_1_14(this);
 
         Bukkit.getPluginManager().registerEvents(new JoinEvent(this), this);
         getCommand("book").setExecutor(new BookCommand(this));
@@ -82,7 +76,7 @@ public class AutomaticBooks extends JavaPlugin {
             @Override
             public void run() {
                 if (!Bukkit.getPluginManager().isPluginEnabled("ProtocolLib")) {
-                    consoleMessage("§cAutomaticBooks need ProtocolLib. Please install it.");
+                    consoleMessage("§cAutomaticBooks needs ProtocolLib. Please install it.");
                 }
             }
         }.runTaskLaterAsynchronously(this, 20 * 10);
@@ -105,11 +99,7 @@ public class AutomaticBooks extends JavaPlugin {
 
 
     public ItemStack getEmptyBook() {
-
-        if (!isLegacy())
-            return new ItemStack(Material.WRITABLE_BOOK);
-        else
-            return new ItemStack(Material.matchMaterial("BOOK_AND_QUILL"), 1, (byte) 0);
+        return bookOpener.getEmptyBook();
     }
 
     public ItemStack getBook(Player player, List<String> pages, boolean placeholderAPI) {
@@ -135,7 +125,8 @@ public class AutomaticBooks extends JavaPlugin {
             colored.add(ChatColor.translateAlternateColorCodes('&', s));
         }
         meta.setPages(colored);
-        meta.setDisplayName("");
+        meta.setTitle("§eAutomaticBooks");
+        meta.setDisplayName("§eAutomaticBooks");
         meta.setAuthor(player.getName());
         book.setItemMeta(meta);
         return book;
@@ -262,7 +253,6 @@ public class AutomaticBooks extends JavaPlugin {
     public void sendMessage(Player player, String message) {
         String msg = config.getString("messages." + message);
         if (msg == null) {
-            consoleMessage("§cThis message has been not found: " + message);
             return;
         }
         player.sendMessage(ChatColor.translateAlternateColorCodes('&', msg));
