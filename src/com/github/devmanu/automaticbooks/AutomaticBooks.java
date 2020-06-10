@@ -47,6 +47,7 @@ public class AutomaticBooks extends JavaPlugin {
     public void onEnable() {
 
         consoleMessage("§aPlugin enabled.");
+        AutomaticBooksAPI.instance = this;
         String[] version = Bukkit.getVersion().replace(")", "").split("\\.");
         int v1 = Integer.valueOf(version[1]);
 
