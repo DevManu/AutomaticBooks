@@ -6,6 +6,7 @@ import com.github.devmanu.automaticbooks.book_openers.BookOpener_1_14;
 import com.github.devmanu.automaticbooks.book_openers.BookOpener_1_8;
 import com.github.devmanu.automaticbooks.commands.BookCommand;
 import com.github.devmanu.automaticbooks.events.JoinEvent;
+import com.github.devmanu.automaticbooks.events.ResourcePackEvent;
 import jdk.internal.util.xml.impl.ReaderUTF8;
 import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Bukkit;
@@ -60,6 +61,7 @@ public class AutomaticBooks extends JavaPlugin {
             bookOpener = new BookOpener_1_14(this);
 
         Bukkit.getPluginManager().registerEvents(new JoinEvent(this), this);
+        Bukkit.getPluginManager().registerEvents(new ResourcePackEvent(this), this);
         getCommand("book").setExecutor(new BookCommand(this));
 
         Metrics metrics = new Metrics(this, 5715);
@@ -77,7 +79,7 @@ public class AutomaticBooks extends JavaPlugin {
             @Override
             public void run() {
                 if (!Bukkit.getPluginManager().isPluginEnabled("ProtocolLib")) {
-                    consoleMessage("§cAutomaticBooks needs ProtocolLib. Please install it.");
+                    consoleMessage("§cAutomaticBooks requires ProtocolLib. Please install it.");
                 }
             }
         }.runTaskLaterAsynchronously(this, 20 * 10);
@@ -281,6 +283,74 @@ public class AutomaticBooks extends JavaPlugin {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+
+    public void openJoinBook(Player player) {
+
+
+        if (!player.hasPermission("AutomaticBooks.join.read"))
+            return;
+
+        int times = getConfig().getInt("times");
+
+        if (times == 0)
+            return;
+
+
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                try {
+                    JSONObject obj = getJoinData();
+                    JSONArray array = (JSONArray) obj.get("players");
+                    if (array == null) {
+                        array = new JSONArray();
+                        obj.put("players", array);
+                    }
+                    JSONObject pl = null;
+                    for (int i = 0; i < array.size(); i++) {
+                        if (((JSONObject) array.get(i)).get("name").equals(player.getName())) {
+                            pl = (JSONObject) array.get(i);
+                            break;
+                        }
+                    }
+
+
+                    if (pl == null) {
+                        pl = new JSONObject();
+                        pl.put("name", player.getName());
+                        pl.put("views", 1);
+                        array.add(pl);
+                    } else {
+                        int views = (Integer.parseInt(pl.get("views").toString()));
+                        if (times >= 0 && views >= times) {
+                            return;
+                        }
+
+                        pl.put("views", views + 1);
+                    }
+
+
+                    Writer writer = new OutputStreamWriter(new FileOutputStream(getJoinBook()), StandardCharsets.UTF_8);
+                    writer.write(obj.toString());
+                    writer.flush();
+                    writer.close();
+
+                    getBookOpener().openBook(player, getJoinBookPages());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }.runTaskLaterAsynchronously(this, getConfig().getInt("delay") * 20);
+
+
+        if (player.hasPermission("AutomaticBooks.admin")) {
+            Updater updater = getUpdater();
+            updater.sendWarning(player);
+        }
+
+
     }
 
 }
