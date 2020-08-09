@@ -44,7 +44,7 @@ public class Updater {
 
 
                 try {
-                    URL url = new URL("https://pastebin.com/raw/TiHHxb1Z");
+                    URL url = new URL("https://raw.githubusercontent.com/DevManu/AutomaticBooks/master/version.json");
                     URLConnection conn = url.openConnection();
                     BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()));
 
@@ -82,7 +82,7 @@ public class Updater {
 
 
             }
-        }.runTaskTimerAsynchronously(automaticBooks, 0, 20 * 15);
+        }.runTaskTimerAsynchronously(automaticBooks, 0, 20 * 60 * 60 * 2);
     }
 
 
