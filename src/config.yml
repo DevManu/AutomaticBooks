@@ -1,8 +1,18 @@
+###############################
+# Author: _Ma_nu_             #
+###############################
+
+
+
 usePermission: false
 usePlaceholderAPI: true
-times: -1  #0 = the message is not shown, #-1 = the message is always shown;
 delay: 2 #-1 = shown when resource pack is loaded
-soft-depend: [ProtocolLib]
+
+
+# If you want to show the book only on the first login you can set times: 1 and resetViewsOnBookChange: false
+
+times: -1  #0 = the message is not shown, #-1 = the message is always shown;
+resetViewsOnBookChange: true
 defaultCraftedBookName: "&6Awesome book!"
 searchForUpdates: true
 messages:

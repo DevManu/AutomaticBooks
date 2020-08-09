@@ -16,13 +16,11 @@ import org.bukkit.configuration.Configuration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import java.io.*;
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -60,7 +58,6 @@ public class BookCommand implements CommandExecutor {
             player.spigot().sendMessage(download, click, author);
             return true;
         }
-
 
 
         Configuration config = automaticBooks.getConfig();
@@ -128,7 +125,9 @@ public class BookCommand implements CommandExecutor {
                             JSONArray array = new JSONArray();
                             array.addAll(pages);
                             obj.put("pages", array);
-                            obj.remove("players");
+
+                            if (automaticBooks.getConfig().getBoolean("resetViewsOnBookChange"))
+                                obj.remove("players");
 
                             writer.write(obj.toString());
                             writer.flush();

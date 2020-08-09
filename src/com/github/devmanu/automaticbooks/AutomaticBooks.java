@@ -40,7 +40,7 @@ public class AutomaticBooks extends JavaPlugin {
     private YamlConfiguration config;
     private File configFile = new File(getDataFolder() + File.separator + "config.yml");
     private ArrayList<String> pages = new ArrayList<>();
-    private static final String VERSION = "2.1";
+    private static final String VERSION = "2.2";
     private Updater updater;
 
 
@@ -83,6 +83,14 @@ public class AutomaticBooks extends JavaPlugin {
                 }
             }
         }.runTaskLaterAsynchronously(this, 20 * 10);
+
+
+        //Config fix
+
+        if (getConfig().get("resetViewsOnBookChange") == null) {
+            getConfig().set("resetViewsOnBookChange", true);
+            saveConfig();
+        }
 
     }
 
