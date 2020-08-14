@@ -51,3 +51,4 @@ messages:
   craftUsage: "&2Usage: &a/book craft [name]"
   preview: "&aYou have opened a preview"
   editBook: "&aYou can now edit the book"
+  openUsage: "&aOpen the book with /book open"

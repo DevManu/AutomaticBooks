@@ -46,6 +46,15 @@ public class BookCommand implements CommandExecutor {
 
         Player player = (Player) sender;
 
+        boolean onlyRead = sender.hasPermission("automaticbooks.command.open") && !sender.hasPermission("automaticbooks.admin");
+
+
+        if (onlyRead && args.length > 0 && args[0].equalsIgnoreCase("open")) {
+            automaticBooks.getBookOpener().openBook(player, automaticBooks.getJoinBookPages());
+            automaticBooks.sendMessage(player, "open");
+            return true;
+        }
+
 
         if (!sender.hasPermission("automaticbooks.admin")) {
             TextComponent t1 = new TextComponent("§8[§6AutomaticBooks§8] §eThis server uses §6AutomaticBooks " + automaticBooks.getVersion() + "§e!");
@@ -56,157 +65,192 @@ public class BookCommand implements CommandExecutor {
             click.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("§eDownload AutomaticBooks").create()));
             player.spigot().sendMessage(t1);
             player.spigot().sendMessage(download, click, author);
+
+
+            if (onlyRead)
+                automaticBooks.sendMessage(player, "openUsage");
+
             return true;
+
         }
 
 
-        Configuration config = automaticBooks.getConfig();
-        List<String> pages = getBookInHand(player);
 
 
-        if (args.length == 0) {
-            sendGuide(player);
-            return true;
+
+
+
+    Configuration config = automaticBooks.getConfig();
+    List<String> pages = getBookInHand(player);
+
+
+        if(args.length ==0)
+
+    {
+        sendGuide(player);
+        return true;
+    }
+
+    String arg = args[0];
+
+        if(arg.equalsIgnoreCase("reload"))
+
+    {
+
+        automaticBooks.reloadPlugin();
+        automaticBooks.sendMessage(player, "reload");
+
+    } else if(arg.equalsIgnoreCase("craft"))
+
+    {
+
+        if (pages != null) {
+            ItemStack book = automaticBooks.getBook(player, pages, automaticBooks.isUsingPlaceholderAPI());
+            BookMeta meta = (BookMeta) book.getItemMeta();
+            if (args.length >= 2) {
+                StringBuilder name = new StringBuilder();
+                for (int i = 1; i < args.length; i++)
+                    name.append(args[i]).append(" ");
+                String s = ChatColor.translateAlternateColorCodes('&', name.toString());
+                meta.setTitle(s);
+                meta.setAuthor(s);
+            } else {
+                meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', config.getString("defaultCraftedBookName")));
+            }
+            book.setItemMeta(meta);
+            player.getInventory().addItem(book);
+            automaticBooks.sendMessage(player, "craftedBook");
+        } else {
+            automaticBooks.sendMessage(player, "notBook");
         }
 
-        String arg = args[0];
 
-        if (arg.equalsIgnoreCase("reload")) {
+    } else if(arg.equalsIgnoreCase("preview"))
 
-            automaticBooks.reloadPlugin();
-            automaticBooks.sendMessage(player, "reload");
+    {
 
-        } else if (arg.equalsIgnoreCase("craft")) {
+        if (pages != null) {
+            automaticBooks.getBookOpener().openBook(player, pages);
+            automaticBooks.sendMessage(player, "preview");
+        } else {
+            automaticBooks.sendMessage(player, "notBook");
+        }
+    } else if(arg.equalsIgnoreCase("open"))
 
-            if (pages != null) {
-                ItemStack book = automaticBooks.getBook(player, pages, automaticBooks.isUsingPlaceholderAPI());
-                BookMeta meta = (BookMeta) book.getItemMeta();
-                if (args.length >= 2) {
-                    StringBuilder name = new StringBuilder();
-                    for (int i = 1; i < args.length; i++)
-                        name.append(args[i]).append(" ");
-                    String s = ChatColor.translateAlternateColorCodes('&', name.toString());
-                    meta.setTitle(s);
-                    meta.setAuthor(s);
-                } else {
-                    meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', config.getString("defaultCraftedBookName")));
-                }
-                book.setItemMeta(meta);
-                player.getInventory().addItem(book);
-                automaticBooks.sendMessage(player, "craftedBook");
-            } else {
-                automaticBooks.sendMessage(player, "notBook");
-            }
+    {
+        automaticBooks.getBookOpener().openBook(player, automaticBooks.getJoinBookPages());
+        automaticBooks.sendMessage(player, "open");
+    } else if(arg.equalsIgnoreCase("save"))
 
+    {
+        if (pages != null) {
 
-        } else if (arg.equalsIgnoreCase("preview")) {
-
-            if (pages != null) {
-                automaticBooks.getBookOpener().openBook(player, pages);
-                automaticBooks.sendMessage(player, "preview");
-            } else {
-                automaticBooks.sendMessage(player, "notBook");
-            }
-        } else if (arg.equalsIgnoreCase("open")) {
-            automaticBooks.getBookOpener().openBook(player, automaticBooks.getJoinBookPages());
-            automaticBooks.sendMessage(player, "open");
-        } else if (arg.equalsIgnoreCase("save")) {
-            if (pages != null) {
-
-                File join = automaticBooks.getJoinBook();
-                new BukkitRunnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            BufferedWriter writer = new BufferedWriter(new FileWriter(join));
-                            JSONObject obj = automaticBooks.getJoinData();
-
-                            obj.remove("pages");
-                            JSONArray array = new JSONArray();
-                            array.addAll(pages);
-                            obj.put("pages", array);
-
-                            if (automaticBooks.getConfig().getBoolean("resetViewsOnBookChange"))
-                                obj.remove("players");
-
-                            writer.write(obj.toString());
-                            writer.flush();
-
-                            automaticBooks.sendMessage(player, "changedBook");
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }.runTaskAsynchronously(automaticBooks);
-            } else {
-                automaticBooks.sendMessage(player, "notBook");
-            }
-
-
-        } else if (arg.equalsIgnoreCase("announce")) {
-
-            if (pages != null) {
-                boolean perm = config.getBoolean("usePermissions");
-                for (Player p : Bukkit.getOnlinePlayers()) {
-                    if (perm && !p.hasPermission("AutomaticBooks.announce.read"))
-                        continue;
-                    automaticBooks.getBookOpener().openBook(p, pages);
-                }
-                automaticBooks.sendMessage(player, "announceSent");
-            } else {
-                automaticBooks.sendMessage(player, "notBook");
-            }
-
-        } else if (arg.equalsIgnoreCase("give")) {
-            player.getInventory().addItem(automaticBooks.getEmptyBook());
-            automaticBooks.sendMessage(player, "givedBook");
-        } else if (arg.equalsIgnoreCase("times")) {
-
-            String n = args[1];
-            if (n.startsWith("-"))
-                n = n.substring(1);
-            if (arg.length() == 1) {
-                automaticBooks.sendMessage(player, "timesUsage");
-            } else if (!StringUtils.isNumeric(n)) {
-                automaticBooks.sendMessage(player, "notNumeric");
-            } else {
-                automaticBooks.getConfig().set("times", Integer.valueOf(args[1]));
-                automaticBooks.saveConfig();
-                automaticBooks.sendMessage(player, "timesChanged");
-            }
-
-        } else if (arg.equalsIgnoreCase("delete")) {
+            File join = automaticBooks.getJoinBook();
             new BukkitRunnable() {
                 @Override
                 public void run() {
                     try {
-                        BufferedWriter writer = new BufferedWriter(new PrintWriter(automaticBooks.getJoinBook()));
+                        BufferedWriter writer = new BufferedWriter(new FileWriter(join));
                         JSONObject obj = automaticBooks.getJoinData();
+
                         obj.remove("pages");
-                        obj.remove("players");
-                        writer.write(obj.toJSONString());
+                        JSONArray array = new JSONArray();
+                        array.addAll(pages);
+                        obj.put("pages", array);
+
+                        if (automaticBooks.getConfig().getBoolean("resetViewsOnBookChange"))
+                            obj.remove("players");
+
+                        writer.write(obj.toString());
                         writer.flush();
-                        automaticBooks.sendMessage(player, "deletedBook");
+
+                        automaticBooks.sendMessage(player, "changedBook");
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
                 }
             }.runTaskAsynchronously(automaticBooks);
-        } else if (arg.equalsIgnoreCase("edit")) {
-            List<String> p = automaticBooks.getJoinBookPages();
-            ItemStack book = automaticBooks.getBookOpener().getEmptyBook();
-            BookMeta meta = (BookMeta) book.getItemMeta();
-            meta.setPages(p);
-            book.setItemMeta(meta);
-            player.getInventory().addItem(book);
-            automaticBooks.sendMessage(player, "editBook");
         } else {
-            sendGuide(player);
+            automaticBooks.sendMessage(player, "notBook");
         }
 
 
-        return true;
+    } else if(arg.equalsIgnoreCase("announce"))
+
+    {
+
+        if (pages != null) {
+            boolean perm = config.getBoolean("usePermissions");
+            for (Player p : Bukkit.getOnlinePlayers()) {
+                if (perm && !p.hasPermission("AutomaticBooks.announce.read"))
+                    continue;
+                automaticBooks.getBookOpener().openBook(p, pages);
+            }
+            automaticBooks.sendMessage(player, "announceSent");
+        } else {
+            automaticBooks.sendMessage(player, "notBook");
+        }
+
+    } else if(arg.equalsIgnoreCase("give"))
+
+    {
+        player.getInventory().addItem(automaticBooks.getEmptyBook());
+        automaticBooks.sendMessage(player, "givedBook");
+    } else if(arg.equalsIgnoreCase("times"))
+
+    {
+
+        String n = args[1];
+        if (n.startsWith("-"))
+            n = n.substring(1);
+        if (arg.length() == 1) {
+            automaticBooks.sendMessage(player, "timesUsage");
+        } else if (!StringUtils.isNumeric(n)) {
+            automaticBooks.sendMessage(player, "notNumeric");
+        } else {
+            automaticBooks.getConfig().set("times", Integer.valueOf(args[1]));
+            automaticBooks.saveConfig();
+            automaticBooks.sendMessage(player, "timesChanged");
+        }
+
+    } else if(arg.equalsIgnoreCase("delete"))
+
+    {
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                try {
+                    BufferedWriter writer = new BufferedWriter(new PrintWriter(automaticBooks.getJoinBook()));
+                    JSONObject obj = automaticBooks.getJoinData();
+                    obj.remove("pages");
+                    obj.remove("players");
+                    writer.write(obj.toJSONString());
+                    writer.flush();
+                    automaticBooks.sendMessage(player, "deletedBook");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }.runTaskAsynchronously(automaticBooks);
+    } else if(arg.equalsIgnoreCase("edit"))
+
+    {
+        List<String> p = automaticBooks.getJoinBookPages();
+        ItemStack book = automaticBooks.getBookOpener().getEmptyBook();
+        BookMeta meta = (BookMeta) book.getItemMeta();
+        meta.setPages(p);
+        book.setItemMeta(meta);
+        player.getInventory().addItem(book);
+        automaticBooks.sendMessage(player, "editBook");
+    } else
+
+    {
+        sendGuide(player);
     }
+
+
+        return true;
+}
 
 
     private List<String> getBookInHand(Player player) {

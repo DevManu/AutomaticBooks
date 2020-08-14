@@ -1,6 +1,6 @@
 {
-"version": "2.2",
-"update-text": "&6[AutomaticBooks] &eClick here to download the latest update.",
+"version": "2.2.1",
+"update-text": "&6[AutomaticBooks] &eClick here to download the latest update. Added permission for &d/book open&e command.",
 "hover-text": "&6Download the latest update!", 
 "update-link": "https://www.spigotmc.org/resources/automaticbooks-book-on-join-announces-in-game-customizable.66639/"
 }
