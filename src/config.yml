@@ -30,6 +30,7 @@ messages:
     - " &8- &3/book give &8» &bAdd a Book and Quill to your inventory"
     - " &8- &3/book edit &8» &bEdit the saved book"
     - " &8- &3/book craft [name] &8» &bCraft a book using the Book and Quill in your hand"
+    - " &8- &3/book discord &8» &bJoin our Discord server"
 
   open: '&aThe book has been opened.'
   test: '&aYou have opened a book as test.'
@@ -42,13 +43,13 @@ messages:
   notSavedBook: '&cThere is not a saved book.'
   timesChanged: '&aYou have changed the value of ''times''.'
   timesUsage: '&2Usage: &a/book times <number>.'
-  notNumeric: '&cYou need to specific a number'
+  notNumeric: '&cYou need to specify a number.'
   reload: "&3AutomaticBooks &ahas been reloaded."
   deletedBook: "&cThe book has been deleted."
-  givedBook: "&aYou have received a Book and Quill."
+  receivedBook: "&aYou have received a Book and Quill."
   craftedBook: "§aYou have crafted a book."
   fullInventory: "&cYour inventory is full."
   craftUsage: "&2Usage: &a/book craft [name]"
-  preview: "&aYou have opened a preview"
-  editBook: "&aYou can now edit the book"
-  openUsage: "&aOpen the book with /book open"
+  preview: "&aYou have opened a preview."
+  editBook: "&aYou can now edit the book."
+  openUsage: "&aOpen the book with /book open."

@@ -1,13 +1,10 @@
 package com.github.devmanu.automaticbooks;
 
-import com.github.devmanu.automaticbooks.book_openers.BookOpener;
-import com.github.devmanu.automaticbooks.book_openers.BookOpener_1_13;
-import com.github.devmanu.automaticbooks.book_openers.BookOpener_1_14;
-import com.github.devmanu.automaticbooks.book_openers.BookOpener_1_8;
+import com.github.devmanu.automaticbooks.book_openers.*;
 import com.github.devmanu.automaticbooks.commands.BookCommand;
 import com.github.devmanu.automaticbooks.events.JoinEvent;
 import com.github.devmanu.automaticbooks.events.ResourcePackEvent;
-import jdk.internal.util.xml.impl.ReaderUTF8;
+import stats.Metrics;
 import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -22,7 +19,6 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import stats.Metrics;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -33,14 +29,13 @@ public class AutomaticBooks extends JavaPlugin {
 
 
     private BookOpener bookOpener;
-    private boolean legacy = true;
     private boolean usingPlaceholderAPI;
+    boolean requiresProtocolLib = true;
     private File joinBook;
     private JSONObject joinData;
     private YamlConfiguration config;
     private File configFile = new File(getDataFolder() + File.separator + "config.yml");
-    private ArrayList<String> pages = new ArrayList<>();
-    private static final String VERSION = "2.2.1";
+    private static final String VERSION = "3.0";
     private Updater updater;
 
 
@@ -49,16 +44,24 @@ public class AutomaticBooks extends JavaPlugin {
 
         consoleMessage("§aPlugin enabled.");
         AutomaticBooksAPI.instance = this;
-        String[] version = Bukkit.getVersion().replace(")", "").split("\\.");
+        String ver = Bukkit.getVersion();
+        String[] version = ver.replace(")", "").split("\\.");
         int v1 = Integer.valueOf(version[1]);
+        int v2 = 0;
+        if (version.length >=3)
+            v2 = Integer.valueOf(version[2]);
 
-
+        consoleMessage("" + v2);
         if (v1 >= 8 && v1 <= 12)
             bookOpener = new BookOpener_1_8(this);
         else if (v1 == 13)
             bookOpener = new BookOpener_1_13(this);
-        else
+        else if (v1 == 14 && (v2 == 0 || v2 == 1))
             bookOpener = new BookOpener_1_14(this);
+        else {
+            bookOpener = new BookOpener_1_14_2(this);
+            requiresProtocolLib = false;
+        }
 
         Bukkit.getPluginManager().registerEvents(new JoinEvent(this), this);
         Bukkit.getPluginManager().registerEvents(new ResourcePackEvent(this), this);
@@ -78,8 +81,10 @@ public class AutomaticBooks extends JavaPlugin {
         new BukkitRunnable() {
             @Override
             public void run() {
-                if (!Bukkit.getPluginManager().isPluginEnabled("ProtocolLib")) {
-                    consoleMessage("§cAutomaticBooks requires ProtocolLib. Please install it.");
+                if (protocolLibError()) {
+                    consoleMessage("-------------------------------------");
+                    consoleMessage("§c§lPlease install ProtocolLib!");
+                    consoleMessage("-------------------------------------");
                 }
             }
         }.runTaskLaterAsynchronously(this, 20 * 10);
@@ -122,7 +127,7 @@ public class AutomaticBooks extends JavaPlugin {
         ItemStack book = new ItemStack(Material.WRITTEN_BOOK);
         BookMeta meta = (BookMeta) book.getItemMeta();
 
-        if (meta == null)
+        if (meta == null || pages == null)
             return null;
 
         List<String> colored = new ArrayList<String>();
@@ -148,6 +153,9 @@ public class AutomaticBooks extends JavaPlugin {
         return book;
     }
 
+    public boolean protocolLibError() {
+        return requiresProtocolLib && !Bukkit.getPluginManager().isPluginEnabled("ProtocolLib");
+    }
 
     public boolean isUsingPlaceholderAPI() {
         return usingPlaceholderAPI;
@@ -200,7 +208,7 @@ public class AutomaticBooks extends JavaPlugin {
 
                         JSONObject obj = new JSONObject();
                         JSONArray array = new JSONArray();
-                        array.add("&5Welcome to &6&lAutomaticBooks.\n\n&3Create your awesome books!\n\n\n\n&8&oMade with &c\u2764 &8&oby _Ma_nu_");
+                        array.add("&3Welcome to &6&lAutomaticBooks&3.\n\n&2&nCreate your awesome books!\n\n&9Use &9&l/book&9 to start configuring this plugin.\n\n&8Please leave a review!\n\n\n&8&oMade with &c\u2764 &8&oby _Ma_nu_");
                         obj.put("pages", array);
                         writer.write(obj.toJSONString());
                         writer.flush();
@@ -213,7 +221,7 @@ public class AutomaticBooks extends JavaPlugin {
 
 
                 try {
-                    ReaderUTF8 reader = new ReaderUTF8(new FileInputStream(joinBook));
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(joinBook), StandardCharsets.UTF_8));
                     JSONParser parser = new JSONParser();
                     joinData = (JSONObject) parser.parse(reader);
                 } catch (IOException | ParseException e) {
@@ -223,7 +231,7 @@ public class AutomaticBooks extends JavaPlugin {
         }.runTaskAsynchronously(this);
 
         try {
-            ReaderUTF8 reader = new ReaderUTF8(new FileInputStream(configFile));
+            BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(configFile), StandardCharsets.UTF_8));
             config = YamlConfiguration.loadConfiguration(reader);
             reader.close();
         } catch (IOException e) {
@@ -256,6 +264,8 @@ public class AutomaticBooks extends JavaPlugin {
     public List<String> getJoinBookPages() {
         JSONArray array = (JSONArray) joinData.get("pages");
 
+        if (array == null)
+            return null;
 
         List<String> pages = new ArrayList<String>();
 
@@ -302,7 +312,7 @@ public class AutomaticBooks extends JavaPlugin {
     public void openJoinBook(Player player) {
 
 
-        if (!player.hasPermission("AutomaticBooks.join.read"))
+        if (config.getBoolean("usePermission") && !player.hasPermission("AutomaticBooks.join.read"))
             return;
 
         int times = getConfig().getInt("times");

@@ -43,8 +43,13 @@ public class BookCommand implements CommandExecutor {
             sender.sendMessage("You must be a player.");
             return true;
         }
-
         Player player = (Player) sender;
+
+        if (automaticBooks.protocolLibError()) {
+            player.sendMessage("§8[§cAutomaticBooks§8] §cPlease install ProtocolLib.");
+            return true;
+        }
+
 
         boolean onlyRead = sender.hasPermission("automaticbooks.command.open") && !sender.hasPermission("automaticbooks.admin");
 
@@ -99,6 +104,7 @@ public class BookCommand implements CommandExecutor {
 
         automaticBooks.reloadPlugin();
         automaticBooks.sendMessage(player, "reload");
+        automaticBooks.consoleMessage("§aPlugin reloaded.");
 
     } else if(arg.equalsIgnoreCase("craft"))
 
@@ -112,8 +118,7 @@ public class BookCommand implements CommandExecutor {
                 for (int i = 1; i < args.length; i++)
                     name.append(args[i]).append(" ");
                 String s = ChatColor.translateAlternateColorCodes('&', name.toString());
-                meta.setTitle(s);
-                meta.setAuthor(s);
+                meta.setDisplayName(s);
             } else {
                 meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', config.getString("defaultCraftedBookName")));
             }
@@ -138,6 +143,10 @@ public class BookCommand implements CommandExecutor {
     } else if(arg.equalsIgnoreCase("open"))
 
     {
+        if (automaticBooks.getJoinBookPages() == null) {
+            automaticBooks.sendMessage(player, "notSavedBook");
+            return true;
+        }
         automaticBooks.getBookOpener().openBook(player, automaticBooks.getJoinBookPages());
         automaticBooks.sendMessage(player, "open");
     } else if(arg.equalsIgnoreCase("save"))
@@ -195,7 +204,7 @@ public class BookCommand implements CommandExecutor {
 
     {
         player.getInventory().addItem(automaticBooks.getEmptyBook());
-        automaticBooks.sendMessage(player, "givedBook");
+        automaticBooks.sendMessage(player, "receivedBook");
     } else if(arg.equalsIgnoreCase("times"))
 
     {
@@ -242,7 +251,13 @@ public class BookCommand implements CommandExecutor {
         book.setItemMeta(meta);
         player.getInventory().addItem(book);
         automaticBooks.sendMessage(player, "editBook");
-    } else
+    } else if (arg.equalsIgnoreCase("discord")) {
+            TextComponent t = new TextComponent("§8[§6AutomaticBooks§8] §eClick here to join our Discord server.");
+            t.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("§eJoin our Discord server").create()));
+            t.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://discord.gg/uYMkzVj"));
+            player.sendMessage("");
+            player.spigot().sendMessage(t);
+        } else
 
     {
         sendGuide(player);

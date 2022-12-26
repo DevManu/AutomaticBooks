@@ -25,6 +25,10 @@ public class BookOpener_1_13 extends BookOpener {
 
     @Override
     public void openBook(Player player, List<String> pages) {
+
+        if (automaticBooks.protocolLibError())
+            return;
+        
         int slot = player.getInventory().getHeldItemSlot();
         final ItemStack old = player.getInventory().getItem(slot);
         player.getInventory().setItem(slot, automaticBooks.getBook(player, pages, automaticBooks.isUsingPlaceholderAPI()));
